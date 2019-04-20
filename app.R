@@ -1,14 +1,9 @@
 library(shiny)
 
-#Serine Proteases 3
-#catdog <- list("DHFBJF")
-
-
-
-  
-
+#Chymotripsin: C-terminal side of Phe, Try, Tyr
 chymotrypsin <- c("F","W", "Y", "f", "w", 'y')
 #chymotripsinButton1 <- "Chymotripsin"
+
 #Trypsin: C- terminal side of Lys, Arg
 trypsin <- c("K", "R", "k", "r")
 #trypsinButton2 <- "Trypsin"
@@ -21,27 +16,19 @@ elastase <- c("A", "G", "a", "g")
 cnbr <- c("M", "m")
 #cnbrButton4 <-"CNBr"
 
+#This list is used by server
 proteases <- c( Chymotrypsin = chymotrypsin,
                 Trypsin = trypsin,
                 Elastase = elastase,
                 CNBr = cnbr)
 
-#proteases <-c("Chymotripsin","Trypsin", "Elastase", "CNBr")
+#This list is displayed on the HTML page
 proteasesLegend <-c("Chymotripsin (F, W, Y)","Trypsin (K, R)", "Elastase (A, G)", "CNBr (M)")
 
 
 get_protease <-function(radioButton_Protease){
   
-#   for (i in (1:length(proteasesLegend))) {
-#     print("FOR")
-#     print(i)
-#     if (radioButton_Protease == proteasesLegend[i]){
-#       print(proteases[i])
-#       return(proteases[i])
-#     }
-#   }
-# }
-  
+ 
   if (radioButton_Protease == proteasesLegend[1]){
     return(chymotrypsin)
 
@@ -59,11 +46,7 @@ get_protease <-function(radioButton_Protease){
 }
 
 
-
-
-
-
-#This function traverse trough peptide and save the indsis of the cut sites and save it in a vector
+#This function traverse trough peptide and save the ideises of the cut sites and save it in a vector
 get_cut_sites <- function(peptide, enzyme){
   cut_sites <- which(peptide %in% enzyme)
   
@@ -79,10 +62,15 @@ get_cut_sites <- function(peptide, enzyme){
   if(last_amino_acid_bool==FALSE){
     cut_sites <- append(cut_sites, length(peptide))
   }
-  #print(cut_site)
+
   cut_sites
 }
 
+#This function:
+#1)Makes a call to the get_cut_sites function
+#2)It cuts the user peptide with ---- at the cut sites 
+#3)It stores final peptide in the digested peptide,
+#4)All chars in digested peptide are capitalized
 digest <- function (peptide="MGAAMSPKR", enzyme="K"){
   
   enzyme <- get_protease(enzyme) 
@@ -96,10 +84,9 @@ digest <- function (peptide="MGAAMSPKR", enzyme="K"){
     digestedPeptide <-append(digestedPeptide, peptide[previous_cut_site:cut_site])
     digestedPeptide <-append(digestedPeptide, "----")
     previous_cut_site <- cut_site + 1
-
-    
+   
   } 
-  
+  #Convertes chars to upper case
   toupper(digestedPeptide)
 }
 
@@ -140,32 +127,22 @@ ui <- fluidPage(
                 label = h4("Peptide"),
                 value = "",
                 width = "400px",
-                placeholder = "Example: MGAAMSPKR"),
-      
+                placeholder = "Example: MGAAMSPKR"),      
 
       
       radioButtons(inputId = "Proteases",
                    label = "Proteases",
                    choices = proteasesLegend)
-
-      
-      
-      
-
-      
       
     ),
     
-    mainPanel(
-      
-      
-      
-      
+    mainPanel(      
       
       #Outputs
       titlePanel("Digested Peptide"),
       textOutput("digested_peptide"), 
 
+      #breaks provide additinal space when web page is viwed on a phone screen
       br(),
       br(),
       br(),
@@ -175,20 +152,13 @@ ui <- fluidPage(
       br(),
       br()
 
-      
-      # imageOutput("Cat_Butt")
-      
-                 
       )
-      
     )
-  
-  
 )
 
+#server:
 server <- function(input, output){
-  
-  
+    
   
   output$digested_peptide <- renderText({
     
@@ -200,15 +170,6 @@ server <- function(input, output){
     digest(peptide,input$Proteases)
   
   })
-# 
-#   output&Cat_Butt <- renderImage({
-#   
-#     if(input$user_peptide == "cat butt"){
-#       img(src = "cat-rear.jpg", height = 140, width = 400)
-#     }  
-#   
-#   })
-  
 }
 
 
