@@ -1,4 +1,4 @@
-# Proteases-
+# proteases-
 Proteases simulates action of proteases upon peptides and predicts potential cleavage sites
 
 The code is implemented in R/Shiny.
